@@ -1,0 +1,53 @@
+.center{
+	text-align: center;
+}
+h2{
+	font-size: 25px;
+	font-weight: normal;
+	line-height: 50px;
+}
+.add_albums{
+	text-align: center;
+	margin-top: 50px;
+}
+.add_albums #add_key{
+	margin-left: 10px;
+}
+.del,.lis_name{
+	cursor: pointer;
+	margin-right: 10px;
+}
+.lis_name:hover{
+	color: orange;
+}
+.del:hover{
+	color: red;
+}
+.show_pic #pic_list{
+	width: 100%;
+	overflow: hidden;
+}
+.show_pic #pic_list .pic{
+	float: left;
+	width: 23%;
+	height: 200px;
+	margin-right: 2%;
+	margin-bottom: 25px;
+	border: 1px solid #ccc;
+	box-sizing:border-box;
+	position: relative;
+}
+.show_pic #para{
+	font-size: 12px;
+	color: #aaa;
+	display: none;
+}
+.show_pic #pic_list .pic .del_pic{
+	position: absolute;
+	top: 0;
+	right: 6px;
+	cursor: pointer;
+}
+.show_pic #pic_list .pic:hover{
+	color: orange;
+}

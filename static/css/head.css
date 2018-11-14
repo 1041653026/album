@@ -1,0 +1,43 @@
+.inner{
+	width: 1000px;
+	margin: 0 auto;
+}
+.header{
+	overflow: hidden;
+}
+.header .logo{
+	float: left;
+	width: 150px;
+	height: 100px;
+}
+.header .nav{
+	float: left;
+}
+.header .nav ul{
+	width: 500px;
+	height: 100px;
+	margin-left: 30px;
+}
+.header .nav ul li{
+	float: left;
+	width: 125px;
+	height: 100px;
+	margin-left: 10px;
+	font-size: 25px;
+	line-height: 100px;
+	text-align: center;
+}
+.header .nav ul li:hover a,.active a{
+	color: orange !important;
+}
+.header .user{
+	float: right;
+}
+.header .user div{
+	float: left;
+	width: 100px;
+	height: 100px;
+	font-size: 16px;
+	text-align: center;
+	line-height: 100px;
+}

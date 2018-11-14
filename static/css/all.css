@@ -1,0 +1,27 @@
+.content{
+	margin-top: 20px;
+}
+.content ul{
+	width: 100%;
+}
+.content ul li{
+	width: 18%;
+	height: 180px;
+	text-align: center;
+	float: left;
+	margin-right: 2%;
+	border: 1px solid #ccc;
+	box-sizing:border-box;
+	margin-bottom: 15px;
+}
+.content ul li a{
+	width: 100%;
+	height: 100%;
+}
+.content ul li img{
+	width: 100%;
+	height: 150px;
+}
+.content ul li span{
+	line-height: 30px;
+}
