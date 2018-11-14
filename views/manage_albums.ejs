@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>相册</title>
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/head.css">
+	<link rel="stylesheet" href="css/manage.css">
+</head>
+<body>
+	<div class="header">
+		<div class="inner">
+			<div class="logo">
+				<img src="imgs/taylor8.jpg" alt="">
+			</div>
+			<div class="nav">
+				<ul>
+					<li class="active"><a href="all_albums">全部相册</a></li>
+					<li><a href="/user_albums?hisid=<%=myid%>">我的相册</a></li>
+					<li><a href="/manage_albums">管理相册</a></li>
+				</ul>
+			</div>
+			<div class="user">
+				<div class="touxiang">
+					<a href="/caijian"><img src="<%=touxiang%>" alt=""></a>
+				</div>
+				<div class="username"><%=username%></div>
+				<div class="exit"><a href="/exit">退出</a></div>
+			</div>
+		</div>
+	</div>
+	<div class="content">
+		<div class="inner">
+			<div class="add_albums center">
+				<h2>添加相册</h2>
+				<input type="text" name="add_albums" id="add_albums"><input type="submit" value="添加" id="add_key">
+			</div>
+			<div class="show_albums center">
+				<h2>显示相册</h2>
+				<ul id="show_list">
+					<%for(var i = 0; i < albums.length; i ++){%>
+						<li><span class='lis_name'><%=albums[i]%></span><span class='del'>&times;</span></li>
+					<%}%>
+				</ul>
+			</div>
+			<div class="show_pic center">
+				<h2>显示图片</h2>
+				<p id="para">点击&times;可以删除该图片，勾选下方方框可以设置对他人不可见</p>
+				<ul id="pic_list"></ul>
+			</div>
+			<div class="upload_pic center">
+				<h2>上传图片</h2>
+				<form action="/upload_pic" method="post" enctype="multipart/form-data">
+					<p style="margin-bottom:10px;">
+						<span>上传到相册：</span><select name="select_album" id="select_album">
+							<%for(var i = 0; i < albums.length; i ++){%>
+								<option value="<%=albums[i]%>"><%=albums[i]%></option>
+							<%}%>
+						</select>
+					</p>
+					<input type="file" name="new_pic" style="width:180px;">
+					<input type="submit" id="upload" value="点击上传">
+				</form>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="js/jquery-1.12.3.min.js"></script>
+	<script type="text/javascript">
+		$(function(){
+			// 获取元素
+			var $add_albums = $("#add_albums");
+			var $add_key = $("#add_key");
+			var $show_list = $("#show_list");
+			var $pic_list = $("#pic_list");
+			var $select_album = $("#select_album");
+			var $upload = $("#upload");
+			var $para = $("#para");
+			var $show = $("#show");
+
+			// 定义一个当前访问的像册名
+			var album_now;
+			// 添加相册
+			$add_albums.focus(function(){
+				$add_albums.val("");
+			});
+			$add_key.click(function(){
+				var val = $add_albums.val();
+				// 点击提交后如果有值就发送Ajax，如果没有就提示错误信息
+				if(val){
+					$.ajax({
+						url : "/add_albums",
+						type : "get",
+						data : {
+							album_name : val
+						},
+						dataType : "json",
+						success : function(data){
+							if(!data.error){
+								alert(data.data);
+							}else{
+								alert(data.data);
+								$add_albums.val("");
+								return;
+							}
+							$add_albums.val("");
+							var li = "<li><span class='lis_name'>"+ val +"</span><span class='del'>&times</span></li>";
+							var option = "<option value='" + val + "'>" + val + "</option>";
+							$select_album.append(option);
+							$show_list.append(li);
+						}
+					});
+				}
+			});
+			// 使用委托模式，创建删除相册事件
+			$show_list.on("click",".del",function(){
+				//先发送Ajax在删除相册，返回结果，分析结果
+				var album_name = $(this).prev().html();
+				var parent = $(this).parent();
+				$.ajax({
+					url : "del_album",
+					type : "get",
+					data : {
+						album_name : album_name
+					},
+					dataType : "json",
+					success : function(data){
+						if(data.error){
+							alert(data.data);
+						}else{
+							alert(data.data);
+							// 此时应该删除这个li,并且删除select中的option
+							$select_album.children().each(function(){
+								if($(this).val() === album_name){
+									$(this).remove();
+								}
+							});
+							parent.remove();
+						}
+					}
+				});
+			});	
+			// 使用委托模式显示图片
+			$show_list.on("click",".lis_name",function(){
+				var album_name = $(this).html();
+				album_now = album_name;
+				// 发送Ajax请求图片
+				$.ajax({
+					url : "/show_pic",
+					type : "get",
+					data : {
+						album_name : album_name
+					},
+					dataType : "json",
+					success : function(data){
+						var arr = data.data.arr;
+						if(data.error){
+							alert(data.data);
+						}else{
+							// 将上一轮请求的图片清空
+							$pic_list.html("");
+							$para.css("display","block");
+							// 渲染到页面
+							for(var i = 0;i < arr.length;i ++){
+					 			var li = "<li class='pic'><img src='" + (arr[i].myid + "/" + arr[i].album_name + "/" + arr[i].pic_name) + "'><span class='del_pic'>&times</span><input type='checkbox' "+(arr[i].share === 'true' ? '' : 'checked=checked')+"class='share' /></li>";
+								$pic_list.append(li);
+							}
+						}
+					}
+				});
+			});
+			// 使用委托模式删除图片
+			$pic_list.on("click",".del_pic",function(){
+				// 获得图片信息
+				// 这里要分析一波，需要的图片信息有，myid,album_name,pic_name,这个myid后端可以从session中得到，但是album_name就无法得到了，这时需要一个全局变量，来携带当前需要的album_name
+				var pic_path = $(this).prev().attr("src");
+				var li = $(this).parent();
+				// console.log(pic_name)
+				// 看来分析没用了，因为之前在获取图片的时候已经补全了路径，所以直接删除就可以了
+				// 发送ajax
+				$.ajax({
+					url : "/del_pic",
+					type : "get",
+					data : {
+						pic_path : pic_path,
+						album_name : album_now
+					},
+					dataType : "json",
+					success : function(data){
+						if(data.error){
+							alert(data.data);
+						}else{
+							alert(data.data);
+							// 将当前的这个li从dom树上移除
+							li.remove();
+						}
+					}
+				});
+			});
+			// 使用委托模式修改照片是否分享信息
+			$pic_list.on("click","input:checkbox",function(){
+				// 当点击复选框的时候，要先判断他当前的状态，是否被选中
+				// console.log(this.checked)
+				// 点击后如果this.checked是true，就修改share为false,反之亦然
+				// 发送ajax
+				var share = this.checked ? "false" : "true";
+				var pic_path = $(this).prev().prev().attr("src");
+				$.ajax({
+					url : "/pic_share",
+					type : "get",
+					data : {
+						album_name : album_now,
+						pic_path : pic_path,
+						share : share
+					},
+					dataType : "json",
+					success : function(data){
+						if(data.error){
+							alert(data.data);
+						}else{
+							alert(data.data);
+						}
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>

@@ -5,6 +5,7 @@
 	<title>相册</title>
 	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/head.css">
+	<link rel="stylesheet" href="css/all.css">
 </head>
 <body>
 	<div class="header">
@@ -26,6 +27,15 @@
 				<div class="username"><%=username%></div>
 				<div class="exit"><a href="/exit">退出</a></div>
 			</div>
+		</div>
+	</div>
+	<div class="content">
+		<div class="inner">
+			<ul>
+				<%for(var i = 0;i < arr.length;i ++){%>
+					<li><a href="/user_album?hisid=<%=hisid%>&showalbum=<%=arr[i]%>"><img src="imgs/folder.jpg"><span><%=arr[i]%></span></a></li>
+				<%}%>
+			</ul>
 		</div>
 	</div>
 </body>

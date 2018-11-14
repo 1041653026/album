@@ -9,7 +9,7 @@
 	<script type="text/javascript" src="../js/regist.js"></script>
 </head>
 <body>
-	<form action="/regist" method="post">
+	<form action="/regist" method="post" enctype="multipart/form-data">
 		<p>
 			<label for="username">用户名:</label><input type="text" name="username" id="username">
 		</p>
@@ -21,6 +21,9 @@
 		</p>
 		<p>
 			<label for="re_password">确认密码:</label><input type="password" name="re_password" id="re_password">
+		</p>
+		<p>
+			<span>上传头像:</span><input type="file" name="touxiang">
 		</p>
 		<p>
 			<input type="submit" id="submit">

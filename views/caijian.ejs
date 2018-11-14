@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>相册</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		#UNIT{
+			width: 500px;
+			height: 500px;
+			margin: 20px auto;
+			position: relative;
+		}
+		.mengban{
+			filter:alpha(opacity=50);
+			background: black;
+			background-color: rgba(0,0,0,.5);
+			width: 100%;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+		#area{
+			width:200px;
+			height: 200px;
+			background: url(<%=touxiang%>) no-repeat 0 0 ;
+			background-size:500px 500px;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+		#red{
+			width: 5px;
+			height: 5px;
+			background-color: red;
+			position: absolute;
+			right: -2.5px;
+			bottom: -2.5px;
+		}
+		#caijian{
+			display: block;
+			width: 80px;
+			height: 40px;
+			margin: 0 auto;
+			line-height: 40px;
+			font-size: 24px;
+			background-color: orange;
+			outline: none;
+		}
+		.upload_head{
+			width: 500px;
+			margin: 20px auto;
+		}
+	</style>
+	<link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/head.css">
+</head>
+<body>
+	<div class="header">
+		<div class="inner">
+			<div class="logo" id="change">
+				<img src="imgs/taylor8.jpg" alt="" id="oldimg">
+			</div>
+			<div class="nav">
+				<ul>
+					<li class="active"><a href="/all_albums">全部相册</a></li>
+					<li><a href="/user_albums?hisid=<%=myid%>">我的相册</a></li>
+					<li><a href="/manage_albums">管理相册</a></li>
+				</ul>
+			</div>
+			<div class="user">
+				<div class="touxiang">
+					<a href="/caijian"><img src="<%=touxiang%>" alt=""></a>
+				</div>
+				<div class="username"><%=username%></div>
+				<div class="exit"><a href="/exit">退出</a></div>
+			</div>
+		</div>
+	</div>
+	<!-- 大盒子 -->
+	<div id="UNIT">
+	 	<img src="<%=touxiang%>" alt="" id="img">
+	 	<div class="mengban"></div>
+	 	<div id="area">
+	 	  	<div id="red"></div>
+	 	</div>
+	</div>
+	<button id="caijian">裁剪</button>
+	<div class="upload_head">
+		<form action="/up_head_pic" method="post" enctype="multipart/form-data">
+			<span>更改头像：</span><input type="file" name="new_head"><input type="submit" value="更改">
+		</form>
+	</div>
+	 <script type="text/javascript" src="/js/offset.js"></script>
+	<script type="text/javascript">
+		 window.onload = function(){
+	 	 	/*定义一个函数用于方便的获取元素*/
+	 	 var $ = function(id){
+	 	 		return  document.getElementById(id)
+	 	 }
+	 	 // 写一个轮子 兼容一下
+	 	 var getCSS = function(dom,css){
+	 	 	  css = css.replace(/-([a-z])/g,function(match,$1){
+	 	 	  	return $1.toUpperCase();
+	 	 	  })
+	 	 	 // 检测是否具备getCSS能力
+	 	 	 if(window.getComputedStyle){
+	 	 	 	return getComputedStyle(dom)[css];
+	 	 	 }else{
+	 	 	  // 检测css的写法
+	 	 	  console.log(css)
+	 	 	 	return dom.currentStyle[css]
+	 	 	 }
+	 	 }
+	 	 var img = $("img");
+
+	 	 // 获取area
+	 	 var area = $("area");
+	 	 // 获取unit
+	 	 var unit = $("UNIT");
+	 	 var head_pic = $("head_pic");
+	 	 var head_pic_father = $("head_pic_father");
+	 	 // 
+	 	 unit.style.width = img.width + "px";
+	 	 unit.style.height = img.height + "px";
+	 	 // 获取red
+	 	 var red =  $("red");
+	 	 // 获取unit到左边页面的距离
+	 	 var unit_left =unit.offsetLeft;
+	 	 // 获取unit到上边页面的距离 因为此时不贴顶了
+	 	 var unit_top = unit.offsetTop;
+	 	 console.log(unit_left)
+	 	 console.log(unit_top)
+	 	 // offsetLeft属性是每一个元素都具备的属性，它表示的是当前元素到它的定位父元素的left距离
+	 	 var unit_w = parseInt(getCSS(unit,"width"));
+	 	 var unit_h = parseInt(getCSS(unit,"height"));
+	 	 console.log(unit_w)
+	 	 console.log(unit_h)
+	 	 // 添加鼠标按下事件
+	 	 red.onmousedown = function(e){
+	 	 	// 事件对象，在高级浏览器中是由浏览器传递进来的 在IE下浏览器不会将事件对象传递到事件中
+	 	 	console.log(e);
+	 	 	var e = e || window.event;
+	 	 	// 阻止事件冒泡
+	 	  e.stopPropagation && 	e.stopPropagation();
+	 	  e.cancelBubble = true; //在IE下 阻止冒泡要使用e.cancelBubble=true 语句
+	 	 	console.log("给document添加onmousemove事件1")
+	 	 		// 添加鼠标移动事件
+	 	 		document.onmousemove = function(e){
+	 	 			var e = e || window.event;
+	 	 			console.log(e.clientX)
+	 	 			// 判断鼠标坐标 只要超过一定位置 就不要执行下面的语句了
+	 	 			if(e.clientX >= unit_left + unit_w || e.clientX<unit_left){
+	 	 				return ;
+	 	 			}
+	 	 			console.log(321)
+	 	 			if(e.clientY >= unit_top+unit_h || e.clientY<0){
+	 	 				return;
+	 	 			}
+	 	 			console.log(321)
+	 	 			area.style.width = e.clientX - unit_left -parseInt(getCSS(area,"left")) +"px";
+	 	 			area.style.height = e.clientY - parseInt(getCSS(area,"top"))-unit_top +"px";
+	 	 			// document.onmousemove = null;
+	 	 		}
+	 	 }
+	 	 // 鼠标抬起取消事件
+	 	 document.onmouseup = function(){
+	 	 	  document.onmousemove = null;
+	 	 }
+	 	 // 给area添加鼠标按下事件
+	 	 area.onmousedown = function(e){
+	 	 	  var e = e || window.event;
+	 	 		console.log("给document添加onmousemove事件2")
+	 	 	  // 鼠标按下的时候 记录鼠标的位置
+	 	 	  var now_x = e.clientX;
+	 	 	  var now_y = e.clientY; 
+	 	 	  // 还要得到area的当前定位值
+			 	var area_top = parseInt(getCSS(this,"top"));
+			 	var area_left = parseInt(getCSS(this,"left"));
+	 	 	  // 添加鼠标移动事件
+	 	 	  document.onmousemove = function(e){
+	 	 	  	var e = e || window.event;
+	 	 	  	// 提取总left和top值
+	 	 	  	var left =  e.clientX-now_x +area_left;
+	 	 	  	var top = e.clientY-now_y +area_top;
+	 	 	  	// 如果left小于0 或者大于（整个盒子宽度-area的宽度）就让它left值不再变化
+	 	 	  	if(left<0){
+	 	 	  		left = 0;
+	 	 	  	}
+	 	 	  	// 获取unit的宽度
+	 	 	  	var unit_w = parseInt(getCSS(unit,"width"));
+	 	 	  	var area_w = parseInt(getCSS(area,"width"));
+	 	 	  	var unit_h = parseInt(getCSS(unit,"height"));
+	 	 	  	var area_h = parseInt(getCSS(area,"height"));
+	 	 	  	if(left>(unit_w-area_w)){
+	 	 	  		left = unit_w-area_w
+	 	 	  	}
+	 	 	  	if(top<0){
+	 	 	  		top = 0;
+	 	 	  	}
+	 	 	  	if(top > (unit_h-area_h)){
+	 	 	  		top = unit_h-area_h
+	 	 	  	}
+	 	 	  	area.style.left = left +"px";
+	 	 	  	area.style.top = top +"px";
+	 	 	  	// 在移动的时候就得去改变背景定位值
+	 	 	  	// 获取当前的area的定位值
+	 	 	  	var area_x = parseInt(getCSS(area,"left"));
+	 	 	  	var area_y =parseInt(getCSS(area,"top"));
+	 	 	  	area.style["background-position"] = -area_x +"px "+ -area_y +"px";
+	 	 	  }
+	 	 }
+	 	 // 获取button
+	 	 var btn = $("caijian");
+	 	 var change = $("change");
+	 	 var oldimg = $("oldimg");
+	 	 var shit = new Image();
+	 	 // 制定一个宽高比
+	 	 var pvW,pvy;
+
+	 	 btn.onclick = function(){
+	 	 	// 点击后发送Ajax，携带头像路径信息，裁剪后的x,y,h,w,等信息
+	 	 	var xhr = new XMLHttpRequest();
+	 	 	xhr.onreadystatechange = function(){
+	 	 		if(xhr.readyState === 4){
+	 	 			var result = xhr.responseText;
+	 	 			result = JSON.parse(result);
+	 	 			if(!result.error){
+	 	 				location.href = "/caijian";
+	 	 				// alert(result.data);
+	 	 				/*var newimg = new Image();
+	 	 				newimg.src = "<%=touxiang%>" + "?" + Math.random();
+	 	 				newimg.onload = function(){
+	 	 					change.replaceChild(newimg,oldimg);
+	 	 				}*/
+	 	 			}else{
+	 	 				alert(result.data);
+	 	 			}
+	 	 		}
+	 	 	}
+		 	 shit.src = "<%=touxiang%>" + "?" + Math.random();
+		 	 shit.onload = function(){
+		 	 	pvW = shit.width / 500;
+		 	 	pvH = shit.height / 500;
+	 	 		xhr.open("get","/caijianT?w="+area.clientWidth * pvW+"&h="+area.clientHeight * pvH+"&x="+area.offsetLeft * pvW+"&y="+area.offsetTop * pvH,true);
+	 	 		xhr.send();
+		 	 }
+	 	 }
+	 	}
+	</script>
+</body>
+</html>
